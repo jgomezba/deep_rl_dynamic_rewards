@@ -92,4 +92,4 @@ if __name__ == "__main__":
         online, _ = train(Path("config.yaml"), save_model=True)
 
     # Run evaluation
-    run_eval(episodes=10, render=True, network=online)
+    run_eval(episodes=10, n_gems=7, render=True, network=online)
