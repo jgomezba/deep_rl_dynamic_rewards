@@ -1,0 +1,8 @@
+services:
+  deep_rl:
+    build: .
+    container_name: deep_rl_container
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true

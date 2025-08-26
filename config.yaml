@@ -1,0 +1,18 @@
+grid_size: 5
+n_gems: 3
+max_steps: 100
+reward_goal: 20
+reward_step: -1
+reward_gem: 5
+reward_invalid: -1
+start: [0, 0]
+goal: [4, 4]
+episodes: 1100
+batch_size: 64
+gamma: 0.99
+lr: 0.001
+replay_capacity: 50000
+target_update_every: 500
+eps_start: 1.0
+eps_end: 0.05
+eps_decay: 0.997
