@@ -7,7 +7,7 @@ import numpy as np
 from networks.q_network import QNet
 from buffers.buffer import ReplayBuffer
 from envs.environment import GridWorld
-from utils import select_action, soft_update
+from trainers.utils import select_action, soft_update
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
