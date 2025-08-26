@@ -86,16 +86,32 @@ class GridWorld:
         obs[2, ai, aj] = 1.0
         return obs
 
-    def render(self, sleep=0.25, title=""):
+    def render(self, sleep=0.25, title="", save_gif=False, frames_list=None):
         grid = np.zeros((self.G, self.G))
         for (i,j) in self.gems:
             grid[i,j] = 1
-        gi,gj = self.goal
-        grid[gi,gj] = 2
-        ai,aj = self.agent
-        grid[ai,aj] = 3
-        clear_output(wait=True)
-        plt.imshow(grid, cmap="coolwarm", vmin=0, vmax=3)
-        plt.title(title)
-        plt.show()
-        time.sleep(sleep)
+        gi, gj = self.goal
+        grid[gi, gj] = 2
+        ai, aj = self.agent
+        grid[ai, aj] = 3
+        
+        if save_gif and frames_list is not None:
+            fig, ax = plt.subplots()
+            ax.imshow(grid, cmap="coolwarm", vmin=0, vmax=3)
+            ax.axis("off")
+
+            from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+            canvas = FigureCanvas(fig)
+            canvas.draw()
+            buf, (w, h) = canvas.print_to_buffer() 
+            image = np.frombuffer(buf, dtype=np.uint8).reshape(h, w, 4)[..., :3]
+            frames_list.append(image)
+            plt.close(fig)
+
+        else:
+            clear_output(wait=True)
+            plt.imshow(grid, cmap="coolwarm", vmin=0, vmax=3)
+            plt.title(title)
+            plt.axis("off")
+            plt.show()
+            time.sleep(sleep)

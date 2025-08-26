@@ -3,6 +3,8 @@ import yaml
 import torch
 import sys
 import numpy as np
+from datetime import datetime
+import imageio
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -27,13 +29,14 @@ def run_eval(episodes=5, n_gems=3, render=True, network=None):
                          actions=[(-1,0),(1,0),(0,-1),(0,1)])
     
     for e in range(episodes):
+        frames = []
         s = eval_env.reset()
         done = False
         total_r = 0.0
         steps = 0
         while not done and steps < cfg["max_steps"]:
             if render:
-                eval_env.render(title=f"Eval ep {e+1} | Gems={n_gems} | R={total_r:.1f}")
+                eval_env.render(title=f"Eval ep {e+1} | Gems={n_gems} | R={total_r:.1f}", save_gif=True, frames_list=frames)
             with torch.no_grad():
                 q = network(torch.tensor(s[None,...], dtype=torch.float32, device=device))
                 a = int(q.argmax(dim=1).item())
@@ -41,7 +44,16 @@ def run_eval(episodes=5, n_gems=3, render=True, network=None):
             total_r += r
             steps += 1
         print(f"[EVAL] Episodio {e+1}: Recompensa total={total_r:.1f}, pasos={steps}, gemas recogidas={eval_env.collected}/{eval_env.n_gems}")
+        save_gif(frames, episode_num=e)
 
+
+def save_gif(frames, episode_num):
+    gifs_dir = Path("gifs")
+    gifs_dir.mkdir(exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    gif_path = gifs_dir / f"episode_{episode_num}_{timestamp}.gif"
+    imageio.mimsave(gif_path, frames, duration=0.25)
+    print(f"GIF guardado en {gif_path}")
 
 if __name__ == "__main__":
     model_path = Path(*["saved_models","online.pth"])
@@ -58,4 +70,4 @@ if __name__ == "__main__":
         print("No se encontró modelo, entrenando desde cero...")
         online, _ = train(Path("config.yaml"), save_model=True)
     
-    run_eval(episodes=1, render=True, network=online)
+    run_eval(episodes=10, render=True, network=online)
