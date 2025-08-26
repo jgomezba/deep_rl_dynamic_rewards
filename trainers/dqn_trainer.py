@@ -43,7 +43,8 @@ EPS_START, EPS_END, EPS_DECAY = 1.0, 0.05, 0.997
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"device: {device}")
 
-env = GridWorld(GRID_SIZE, N_GEMS)
+env = GridWorld(grid_size=GRID_SIZE, n_gems=N_GEMS, start=START, max_steps=MAX_STEPS, reward_step=REWARD_STEP,
+                reward_gem=REWARD_GEM, reward_goal=REWARD_GOAL, reward_invalid=REWARD_INVALID, actions=ACTIONS)
 online = QNet(GRID_SIZE, N_ACTIONS).to(device)
 target = QNet(GRID_SIZE, N_ACTIONS).to(device)
 target.load_state_dict(online.state_dict())

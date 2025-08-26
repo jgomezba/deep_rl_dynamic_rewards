@@ -1,17 +1,31 @@
 import random, time
-
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
 import numpy as np
 
-from envs.constants import *
-
 class GridWorld:
-    def __init__(self, grid_size=GRID_SIZE, n_gems=N_GEMS):
+    def __init__(
+        self, 
+        grid_size=5, 
+        n_gems=3, 
+        start=(0,0), 
+        max_steps=50, 
+        reward_step=-0.1, 
+        reward_gem=1.0, 
+        reward_goal=10.0, 
+        reward_invalid=-1.0,
+        actions=None
+    ):
         self.G = grid_size
         self.n_gems = n_gems
-        self.start = START
+        self.start = start
         self.goal = (grid_size-1, grid_size-1)
+        self.MAX_STEPS = max_steps
+        self.REWARD_STEP = reward_step
+        self.REWARD_GEM = reward_gem
+        self.REWARD_GOAL = reward_goal
+        self.REWARD_INVALID = reward_invalid
+        self.ACTIONS = actions if actions is not None else [(0,1),(0,-1),(-1,0),(1,0)]
         self.reset()
 
     def _random_gems(self):
@@ -30,34 +44,34 @@ class GridWorld:
         return self._obs()
 
     def step(self, action):
-        dx, dy = ACTIONS[action]
+        dx, dy = self.ACTIONS[action]
         x, y = self.agent
         nx, ny = x + dx, y + dy
         self.t += 1
 
         if nx < 0 or nx >= self.G or ny < 0 or ny >= self.G:
-            reward = REWARD_STEP + REWARD_INVALID
+            reward = self.REWARD_STEP + self.REWARD_INVALID
             done = False
             return self._obs(), reward, done, {}
 
         self.agent = (nx, ny)
-        reward = REWARD_STEP
+        reward = self.REWARD_STEP
 
         if self.agent in self.gems:
             self.gems.remove(self.agent)
             self.collected += 1
-            reward += REWARD_GEM
+            reward += self.REWARD_GEM
 
         done = False
 
         if self.agent == self.goal:
             if self.collected == self.n_gems:
-                reward += REWARD_GOAL
+                reward += self.REWARD_GOAL
                 done = True
             else:
                 reward -= 2 
 
-        if self.t >= MAX_STEPS:
+        if self.t >= self.MAX_STEPS:
             done = True
 
         return self._obs(), reward, done, {}
