@@ -120,7 +120,7 @@ Features:
 
 Here’s an example episode from the evaluation:
 
-![Episode 8](gifs/episode_8_20250826_030005.gif)
+![Episode 8](gifs/episode_8_20250826_030945.gif)
 
 ---
 

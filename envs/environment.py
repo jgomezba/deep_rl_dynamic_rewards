@@ -133,41 +133,35 @@ class GridWorld:
 
     def render(self, sleep=0.25, title="", save_gif=False, frames_list=None):
         """
-        Render the environment.
-
-        Args:
-            sleep (float): Time to pause between frames (only for live display).
-            title (str): Title for the plot.
-            save_gif (bool): If True, appends frame to `frames_list` instead of showing it.
-            frames_list (list): List to store frames for GIF creation.
+        Render the environment with clear differentiation between agent, gems, and goal.
         """
-        grid = np.zeros((self.G, self.G))
+        fig, ax = plt.subplots()
+        ax.set_xlim(-0.5, self.G - 0.5)
+        ax.set_ylim(-0.5, self.G - 0.5)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_aspect('equal')
+
         for i, j in self.gems:
-            grid[i, j] = 1
+            ax.scatter(j, self.G - 1 - i, c='gold', marker='o', s=200, edgecolors='k', label='Gem')
+
         gi, gj = self.goal
-        grid[gi, gj] = 2
+        ax.scatter(gj, self.G - 1 - gi, c='green', marker='s', s=250, edgecolors='k', label='Goal')
+
         ai, aj = self.agent
-        grid[ai, aj] = 3
+        ax.scatter(aj, self.G - 1 - ai, c='red', marker='^', s=300, edgecolors='k', label='Agent')
+
+        ax.set_title(title)
 
         if save_gif and frames_list is not None:
-            fig, ax = plt.subplots()
-            ax.imshow(grid, cmap="coolwarm", vmin=0, vmax=3)
-            ax.axis("off")
-
             from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
             canvas = FigureCanvas(fig)
             canvas.draw()
             buf, (w, h) = canvas.print_to_buffer()
-            # Extract RGB channels only
             image = np.frombuffer(buf, dtype=np.uint8).reshape(h, w, 4)[..., :3]
             frames_list.append(image)
             plt.close(fig)
-
         else:
             clear_output(wait=True)
-            plt.imshow(grid, cmap="coolwarm", vmin=0, vmax=3)
-            plt.title(title)
-            plt.axis("off")
             plt.show()
             time.sleep(sleep)
